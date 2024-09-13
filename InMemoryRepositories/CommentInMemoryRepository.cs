@@ -2,7 +2,7 @@
 using RepositoryContracts;
 namespace InMemoryRepositories;
 
-public class CommentInMemoryRepository
+public class CommentInMemoryRepository : ICommentRepository
 {
     List<Comment> comments;
 
