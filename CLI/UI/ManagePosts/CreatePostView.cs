@@ -30,5 +30,6 @@ public class CreatePostView
         
         post= await _postRepository.AddAsync(post);
         Console.WriteLine($"Post with id {post.Id} has been created!");
+        Console.WriteLine();
     }
 }

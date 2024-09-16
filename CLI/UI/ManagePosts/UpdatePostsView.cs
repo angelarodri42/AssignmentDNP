@@ -29,6 +29,7 @@ public class UpdatePostsView (IPostRepository postRepository)
         }
         await postRepository.UpdateAsync(post);
         Console.WriteLine("Post Updated");
+        Console.WriteLine();
         
         
 

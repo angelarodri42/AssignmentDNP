@@ -11,6 +11,7 @@ public class DeletePostView (IPostRepository postRepository)
        
         await postRepository.DeleteAsync(postId);
         Console.WriteLine("Post deleted");
+        Console.WriteLine();
 
     }
 }

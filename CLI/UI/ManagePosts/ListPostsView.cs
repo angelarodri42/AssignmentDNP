@@ -10,9 +10,13 @@ public class ListPostsView(IPostRepository postRepository)
         IQueryable<Post> posts = postRepository.GetMany();
         foreach (Post post in posts)
         {
-            Console.WriteLine(post.Title);
-            Console.WriteLine(post.Body);
-            Console.WriteLine(post.Id);
+            Console.WriteLine();
+            Console.WriteLine("Title:"+ post.Title);
+            Console.WriteLine("Body:" + post.Body);
+            Console.WriteLine("Post id:" + post.Id);
+            Console.WriteLine("Id of the user that wrote the post:" + post.UserId);
+            Console.WriteLine();
+            
         }
     }
 }

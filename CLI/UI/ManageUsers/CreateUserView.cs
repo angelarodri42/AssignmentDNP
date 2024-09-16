@@ -1,4 +1,5 @@
-﻿using RepositoryContracts;
+﻿using Entities;
+using RepositoryContracts;
 
 namespace CLI.UI.ManageUsers;
 
@@ -11,8 +12,20 @@ public class CreateUserView
         _userRepository = userRepository;
     }
 
-    private async Task AddNewUserAsync(string username, string password)
+    public async Task AddNewUserAsync()
     {
-        
+        Console.WriteLine("Enter username: ");
+        string username = Console.ReadLine();
+
+        Console.WriteLine("Enter password: ");
+        string password = Console.ReadLine();
+
+        User user = new User();
+        user.UserName = username;
+        user.Password = password;
+
+        user = await _userRepository.AddAsync(user);
+        Console.WriteLine($"User with id {user.Id} has been created!");
+        Console.WriteLine();
     }
 }
