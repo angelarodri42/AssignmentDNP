@@ -1,6 +1,8 @@
-﻿namespace CLI.UI.ManageComments;
+﻿using RepositoryContracts;
 
-public class ListCommentsView
+namespace CLI.UI.ManageComments;
+
+public class ListCommentsView (ICommentRepository, commentrepository)
 {
     
 }

@@ -1,5 +1,6 @@
 ﻿
 using System.Security.Cryptography;
+using CLI.UI.ManageComments;
 using CLI.UI.ManagePosts;
 using RepositoryContracts;
 
@@ -21,6 +22,8 @@ public class CliApp(
             Console.WriteLine("3. Delete post");
             Console.WriteLine("4. Edit post");
             Console.WriteLine("5. View one post");
+            Console.WriteLine("6. Create a comment");
+            Console.WriteLine("7. See comments");
             
             string choice = Console.ReadLine();
             if (choice == "1")
@@ -52,6 +55,13 @@ public class CliApp(
                 SinglePostView singlePostView = new SinglePostView(postRepository);
                 await singlePostView.GetSinglePostAsync();
             }
+
+            if (choice == "6")
+            {
+                CreateCommentView addCommentView = new CreateCommentView(commentRepository);
+                await addCommentView.CreateComment();
+            }
+
 
         }
         
