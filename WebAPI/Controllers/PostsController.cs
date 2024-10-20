@@ -46,9 +46,29 @@ public class PostsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetMany([FromBody] GetManyPostsDTO? dto)
     {
         IQueryable<Post> posts = _postRepository.GetMany();
+
+        if (dto != null)
+        {
+            if (dto.title != null)
+            {
+                posts= posts.Where(p=>p.Title.Contains(dto.title));
+                
+            }
+
+            if (dto.body != null)
+            {
+                posts = posts.Where(p => p.Body.Contains(dto.body));
+            }
+
+            if (dto.userId != null)
+            {
+                posts = posts.Where(p => p.UserId == dto.userId);
+            }
+        }
+        
         return Ok(posts);
     }
 

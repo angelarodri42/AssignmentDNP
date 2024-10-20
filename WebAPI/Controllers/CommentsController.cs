@@ -46,9 +46,27 @@ public class CommentsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetMany([FromBody] GetManyCommentsDTO? dto)
     {
         IQueryable<Comment> comments = _commentRepository.GetMany();
+        if (dto != null)
+        {
+            if (dto.postId != null)
+            {
+                comments = comments.Where(c => c.PostId == dto.postId);
+                
+            }
+
+            if (dto.body != null)
+            {
+                comments = comments.Where(c => c.Body.Contains(dto.body));
+            }
+
+            if (dto.userId != null)
+            {
+                comments = comments.Where(c => c.UserId == dto.userId);
+            }
+        }
         return Ok(comments);
     }
 
