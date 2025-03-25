@@ -9,9 +9,11 @@ public class PostsController : ControllerBase
 
 {
     private readonly IPostRepository _postRepository;
-    public PostsController(IPostRepository postRepository)
+    private readonly IUserRepository _userRepository;
+    public PostsController(IPostRepository postRepository, IUserRepository userRepository)
     {
         _postRepository = postRepository;
+        _userRepository = userRepository;
     }
 
     [HttpPost]
@@ -46,7 +48,7 @@ public class PostsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetMany([FromBody] GetManyPostsDTO? dto)
+    public async Task<IActionResult> GetMany(GetManyPostsDTO? dto)
     {
         IQueryable<Post> posts = _postRepository.GetMany();
 
@@ -68,8 +70,26 @@ public class PostsController : ControllerBase
                 posts = posts.Where(p => p.UserId == dto.userId);
             }
         }
+        List<PostDTO> postDtos = new List<PostDTO>();
+        foreach (Post post in posts)
+        {
+            var user = await _userRepository.GetSingleAsync(post.UserId);
+
+            postDtos.Add(new PostDTO
+            {
+                Id = post.Id,
+                Title = post.Title,
+                Body = post.Body,
+                userDto = new UserDTO
+                {
+                    Id = user.Id,
+                    UserName = user.UserName
+                }
+            });
+        }
         
-        return Ok(posts);
+        
+        return Ok(postDtos);
     }
 
     [HttpDelete("{postId}")]

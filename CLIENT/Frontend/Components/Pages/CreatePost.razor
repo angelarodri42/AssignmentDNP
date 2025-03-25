@@ -1,0 +1,58 @@
+﻿@page "/createpost"
+@using ApiContracts.DTOs
+@using Entities
+@using Frontend.Services
+@rendermode InteractiveServer
+
+@inject NavigationManager NavigationManager;
+@inject IPostService PostService;
+
+
+<PageTitle>Create a Post</PageTitle>
+
+<h1> Create a Post</h1>
+<br/>
+<AuthorizeView>
+    <Authorized>
+        <div class="container">
+
+            <label for="title">Title:</label>
+            <input type="text" id="title" @bind="post.Title"/>
+            <br/>
+            <br/>
+
+            <label for="body">Body:</label>
+            <input type="text" id="body" @bind="post.Body"/>
+            <br/>
+            <br/>
+
+            <button @onclick="ViewPost">Enter</button>
+
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <p>You'll have to log in!</p>
+    <button @onclick='() => NavigationManager.NavigateTo("/Login")'>Login</button>
+    </NotAuthorized>
+</AuthorizeView>
+
+
+
+@code {
+    private Post post = new Post();
+
+    private async Task ViewPost()
+    {
+        var newPost = await PostService.Create(new CreatePostDTO
+        {
+            title = post.Title,
+            body = post.Body,
+            userId = 1
+        });
+        NavigationManager.NavigateTo($"/post/{newPost.Id}");
+
+    }
+
+}
+
+

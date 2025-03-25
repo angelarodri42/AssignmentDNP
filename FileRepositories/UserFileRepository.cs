@@ -95,5 +95,21 @@ public class UserFileRepository : IUserRepository
         List<User> users = JsonSerializer.Deserialize<List<User>>(usersAsJson);
         return users.AsQueryable();
     }
+
+    public async Task<User> GetUserByUsername(string username)
+    {
+        string usersAsJson = await File.ReadAllTextAsync(filePath);
+        List<User> users = JsonSerializer.Deserialize<List<User>>(usersAsJson);
+        
+        User? user = users.SingleOrDefault(u => u.UserName == username);
+        if (user is null)
+        {
+            throw new InvalidOperationException(
+                $"User with username '{username}' was not found");
+        }
+        
+        return user;
+        
+    }
 }
     

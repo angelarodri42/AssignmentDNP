@@ -9,9 +9,11 @@ namespace WebAPI.Controllers;
 public class CommentsController : ControllerBase
 {
     private readonly ICommentRepository _commentRepository;
-    public CommentsController(ICommentRepository commentRepository)
+    private readonly IUserRepository _userRepository;
+    public CommentsController(ICommentRepository commentRepository, IUserRepository userRepository)
     {
         _commentRepository = commentRepository;
+        _userRepository = userRepository;
     }
 
     [HttpPost]
@@ -46,7 +48,7 @@ public class CommentsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetMany([FromBody] GetManyCommentsDTO? dto)
+    public async Task<IActionResult> GetMany(GetManyCommentsDTO? dto)
     {
         IQueryable<Comment> comments = _commentRepository.GetMany();
         if (dto != null)
@@ -67,7 +69,26 @@ public class CommentsController : ControllerBase
                 comments = comments.Where(c => c.UserId == dto.userId);
             }
         }
-        return Ok(comments);
+        
+        List<CommentDTO> commentDtos = new List<CommentDTO>();
+
+        foreach (Comment comment in comments)
+        {
+            var user = await _userRepository.GetSingleAsync(comment.UserId);
+            CommentDTO commentDto = new CommentDTO
+            {
+                Id = comment.Id,
+                Body = comment.Body,
+                PostId = comment.PostId,
+                userDto = new UserDTO
+                {
+                    Id = user.Id,
+                    UserName = user.UserName
+                }
+            };
+            commentDtos.Add(commentDto);
+        }
+        return Ok(commentDtos);
     }
 
     [HttpDelete("{commentId}")]

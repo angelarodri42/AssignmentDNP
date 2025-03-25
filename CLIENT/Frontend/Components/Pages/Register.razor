@@ -1,0 +1,70 @@
+﻿@page "/register"
+@using ApiContracts.DTOs
+@using Entities
+@using Frontend.Services
+@attribute [StreamRendering]
+
+@inject IUserService UserService;
+@rendermode InteractiveServer
+
+
+<PageTitle>Register</PageTitle>
+
+<h1>Register</h1>
+
+<AuthorizeView>
+    <Authorized>
+        <p>You are already logged in, you can register another user here:</p>
+    </Authorized>
+</AuthorizeView>
+
+@if (UserOk)
+{
+    <p class="userOk"> You have successfully registered in the off-brand Reddit :)</p>
+}
+else 
+{
+    <div class="container">
+
+        <label for="username">Username:</label>
+        <input type="text" id="title" @bind="user.UserName"/>
+        <br/>
+        <br/>
+    
+        <label for="body">Password:</label>
+        <input type="password" id="body" @bind="user.Password"/>
+        <br/>
+        <br/>
+    
+        <button class="cursor-pointer" @onclick="CreateUser">Enter</button>
+
+        </div>
+}
+<style>
+    .userOk {
+        color: red;
+    }
+    .cursor-pointer {
+        cursor: pointer;
+    }
+</style>
+
+@code{
+
+    private User user = new User();
+    private bool UserOk = false;
+    
+    private async Task CreateUser()
+    {
+        var newUser = await UserService.Create(new CreateUserDTO
+        {
+            username = user.UserName,
+            password = user.Password
+        });
+        
+        if (newUser != null)
+        {
+            UserOk = true;
+        }
+    }
+}

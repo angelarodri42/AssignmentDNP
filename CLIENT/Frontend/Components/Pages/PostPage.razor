@@ -1,6 +1,115 @@
-﻿@page "/Post"
-<h3>Post</h3>
+﻿@page "/Post/{Id:int}"
+@using ApiContracts.DTOs
+@using Entities
+@using Frontend.Services
+
+@inject NavigationManager NavigationManager;
+@inject IPostService PostService;
+@inject ICommentService CommentService;
+@inject IUserService UserService;
+
+@if (post is not null)
+{
+    <PageTitle>@post.Title</PageTitle>
+
+    <h1>@post.Title</h1>
+
+    <p>@post.Body</p>
+
+    <div class="comments-section">
+        <h2>Comments</h2>
+        <ul class="comments-list">
+            @foreach (var comment in comments)
+            {
+                <li class="comment">
+                    <p class="comment-body">@comment.Body</p>
+                     <p class="comment-author">- @comment.userDto.UserName</p> 
+                </li>
+            }
+        </ul>
+
+        <div class="add-comment">
+            <h3>Add a Comment</h3>
+            <input type="text" @bind="newCommentBody" placeholder="Your comment" />
+            <button @onclick="AddComment">Submit</button>
+        </div>
+    </div>
+}
+
+<style>
+    .comments-section {
+        margin-top: 2em;
+    }
+
+    .comments-list {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    .comment {
+        border-bottom: 1px solid #ccc;
+        padding: 1em 0;
+    }
+
+    .comment-body {
+        font-size: 1em;
+        margin: 0;
+    }
+
+    .comment-author {
+        font-size: 0.9em;
+        color: #555;
+    }
+
+    .add-comment {
+        margin-top: 2em;
+    }
+
+    .add-comment input {
+        width: 100%;
+        padding: 0.5em;
+        margin-bottom: 1em;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+    .add-comment button {
+        padding: 0.5em 1em;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .add-comment button:hover {
+        background-color: #0056b3;
+    } 
+</style>
 
 @code {
-    
+    [Parameter]
+    public int Id { get; set; }
+
+    private Post? post;
+    private List<CommentDTO> comments = new();
+    private string newCommentBody =     string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        post = await PostService.GetSingle(Id);
+        comments = await CommentService.GetMany(new GetManyCommentsDTO(){postId = Id});
+        
+    }
+
+    private async Task AddComment()
+    {
+        if (!string.IsNullOrWhiteSpace(newCommentBody))
+        {
+            var newComment = new CreateCommentDTO() { body = newCommentBody, postId = post.Id, userId = 1};
+            await CommentService.Create(newComment);
+            comments = await CommentService.GetMany(new GetManyCommentsDTO(){postId = Id});
+            newCommentBody = string.Empty;
+        }
+    }
 }

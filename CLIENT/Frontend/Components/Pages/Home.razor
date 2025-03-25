@@ -1,0 +1,73 @@
+﻿@page "/"
+@using ApiContracts.DTOs
+@using Entities
+@using Frontend.Services
+@inject IUserService UserService;
+ 
+@inject IPostService PostService;
+@inject NavigationManager NavigationManager;
+
+
+<PageTitle>Home</PageTitle>
+
+<h1>Home Page</h1>
+
+<AuthorizeView>
+    <Authorized>
+        <p>Welcome, @context.User.Identity.Name</p>
+        @if (posts == null)
+        {
+            <p>
+                <em>No posts yet...Be the first one to post something!</em>
+            </p>
+        }
+        else
+        {
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Content</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var post in posts)
+                {
+                    <tr class="cursor-pointer" @onclick = "() => NavigateToPostDetails (post.Id)">
+                        <td>@post.Title</td>
+                        <td>@post.userDto.UserName</td>
+                        <td>@post.Body</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        }
+    </Authorized>
+    <NotAuthorized>
+        <p>You'll have to log in!</p>
+        <button @onclick='() => NavigationManager.NavigateTo("/Login")'>Login</button>
+    </NotAuthorized>
+</AuthorizeView>
+
+
+
+<style>
+    .cursor-pointer {
+        cursor: pointer;
+    }
+</style>
+
+@code {
+    private List<PostDTO>? posts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        posts = await PostService.GetMany(new GetManyPostsDTO());
+    }
+    
+    private void NavigateToPostDetails(int postId)
+    {
+        NavigationManager.NavigateTo($"/post/{postId}");
+    }
+}
